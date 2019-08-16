@@ -34,6 +34,17 @@ class Customer
     return result
   end
 
+  #Shows all the films a specific customer has booked to see (READ)
+      def films
+        sql = "SELECT films.* FROM films
+        INNER JOIN tickets
+        ON tickets.film_id = films.id
+        WHERE customer_id = $1"
+        values = [@id]
+        films_info = SqlRunner.run(sql, values)
+        films_info.map { |film| Film.new(film) }
+      end
+
   #UPDATE an instance
   def update
     sql = "
