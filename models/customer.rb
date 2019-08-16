@@ -70,6 +70,29 @@ class Customer
     SqlRunner.run(sql, values)
   end
 
+#Basic extension - a method that decreases customer funds when they buy a ticket
+#the price is in the films table, so an inner join will be required at the tickets table, specifically on the films_id property.
+#this will pull through too much info - we only want to access the price.
+#some kind of loop or enumeration method may help to loop through the objects (films), return the prices and subtract the prices from the funds.
+#
+# def get_prices
+#   sql = "SELECT price FROM films
+#   INNER JOIN tickets
+#   ON tickets.film_id = films.id
+#   WHERE customer_id = $1"
+#   values = [@id]
+#   films_info = SqlRunner.run(sql, values)
+#   films_info.map { |price| Film.new(price) }
+# end
+#
+# def pay_for_tickets
+#   films = self.films
+#   prices = films.map { |film| film.price}
+#   customer_payments = []
+#   prices.each { |price| customer_payments.push(price) }
+#   total_paid = customer_payments.reduce(:+)
+#   @funds -= total_paid
+# end
 
 
 
