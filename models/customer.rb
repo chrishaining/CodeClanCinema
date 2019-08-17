@@ -45,6 +45,18 @@ class Customer
     films_info.map { |film| Film.new(film) }
   end
 
+#Basic extension shows all the tickets a customer has bought (READ)
+  def count_tickets()
+     sql = "
+     SELECT * FROM tickets
+     WHERE customer_id = $1
+     "
+     values = [@id]
+    tickets = SqlRunner.run(sql, values)
+    result = tickets.map { |ticket| Ticket.new(ticket) }
+      return result.length
+    end
+
   #UPDATE an instance
   def update
     sql = "
@@ -86,7 +98,11 @@ class Customer
 
   def pay_ticket(ticket)
     if @id == ticket.customer_id
-      return "Payment successful. Your remaining funds are #{@funds -= ticket.get_ticket_price()}"
+      new_funds = @funds -= ticket.get_ticket_price()
+      self.funds == new_funds
+      self.update
+      return "Payment successful. Your remaining funds are #{new_funds}"
+      # return "Payment successful. Your remaining funds are #{@funds -= ticket.get_ticket_price()}"
     end
     return "That is not your ticket!"
   end

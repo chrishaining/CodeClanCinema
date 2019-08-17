@@ -46,6 +46,11 @@ class Film
       customers_info.map { |customer| Customer.new(customer) }
     end
 
+  #Basic extension: counts how many cusotmers are coming to see one film (READ)
+  def count_customers
+     self.customers.length
+  end
+
     #UPDATE method (on an instance of the film class)
     def update
       sql = "
