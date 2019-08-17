@@ -85,18 +85,34 @@ class Ticket
 
 #the following function takes the ticket id and gets the price of the film and the customer funds. it then puts the price and funds into an array. The next step is to subtract the price from the funds, to leave remaining funds. However, this is not the function I want. It puts too much responsibility on the ticket class, and doesn't actually affect the customer's funds. so the next task for me is to transfer some of the code into the customer class. maybe the last two lines... (?) On second thoughts, it doesn't make sense to have the ticket class know about the customer's funds. it only needs to know the film price and customer id. So, the ticket class can take create an array or object containing price and customer id. it could then do a for loop/enumeration with a conditional. It would go through every customer and, if customers.id == customer_id, customers.funds -= price. (or can we do it using sql, maybe by having multiple - nested - functions?)
 
+#Gets ticket_price and customer funds
+  # def get_ticket_price
+  #   sql =
+  #   "SELECT films.price, customers.funds FROM films
+  #   INNER JOIN tickets
+  #   ON tickets.film_id = films.id
+  #   INNER JOIN customers
+  #   ON customer_id = customers.id
+  #   WHERE tickets.id = $1"
+  #   values = [@id]
+  #   ticket_price_and_funds = SqlRunner.run(sql, values)[0]
+  #   remaining_funds = ticket_price_and_funds.map { |price, funds| funds.to_i - price.to_i}
+  #   #return remaining_funds[1] - remaining_funds[0]
+  # end
+
+#gets only the ticket price
   def get_ticket_price
     sql =
-    "SELECT films.price, customers.funds FROM films
+    "SELECT films.price FROM films
     INNER JOIN tickets
     ON tickets.film_id = films.id
-    INNER JOIN customers
-    ON customer_id = customers.id
     WHERE tickets.id = $1"
     values = [@id]
-    ticket_price_and_funds = SqlRunner.run(sql, values)[0]
-    remaining_funds = ticket_price_and_funds.map { |price, funds| funds.to_i - price.to_i}
-    return remaining_funds[1] - remaining_funds[0]
+    ticket_price = SqlRunner.run(sql, values)[0]['price'].to_i
+    return ticket_price
+    #ticket_price.map { |price| price.to_i}
+  #  remaining_funds = ticket_price_and_funds.map { |price, funds| funds.to_i - price.to_i}
+    #return remaining_funds[1] - remaining_funds[0]
   end
 
   #

@@ -35,15 +35,15 @@ class Customer
   end
 
   #Shows all the films a specific customer has booked to see (READ)
-      def films
-        sql = "SELECT films.* FROM films
-        INNER JOIN tickets
-        ON tickets.film_id = films.id
-        WHERE customer_id = $1"
-        values = [@id]
-        films_info = SqlRunner.run(sql, values)
-        films_info.map { |film| Film.new(film) }
-      end
+  def films
+    sql = "SELECT films.* FROM films
+    INNER JOIN tickets
+    ON tickets.film_id = films.id
+    WHERE customer_id = $1"
+    values = [@id]
+    films_info = SqlRunner.run(sql, values)
+    films_info.map { |film| Film.new(film) }
+  end
 
   #UPDATE an instance
   def update
@@ -70,29 +70,45 @@ class Customer
     SqlRunner.run(sql, values)
   end
 
-#Basic extension - a method that decreases customer funds when they buy a ticket
-#the price is in the films table, so an inner join will be required at the tickets table, specifically on the films_id property.
-#this will pull through too much info - we only want to access the price.
-#some kind of loop or enumeration method may help to loop through the objects (films), return the prices and subtract the prices from the funds.
-#
-# def get_prices
-#   sql = "SELECT price FROM films
-#   INNER JOIN tickets
-#   ON tickets.film_id = films.id
-#   WHERE customer_id = $1"
-#   values = [@id]
-#   films_info = SqlRunner.run(sql, values)
-#   films_info.map { |price| Film.new(price) }
-# end
-#
-# def pay_for_tickets
-#   films = self.films
-#   prices = films.map { |film| film.price}
-#   customer_payments = []
-#   prices.each { |price| customer_payments.push(price) }
-#   total_paid = customer_payments.reduce(:+)
-#   @funds -= total_paid
-# end
+  #Basic extension - a method that decreases customer funds when they buy a ticket
+  #the price is in the films table, so an inner join will be required at the tickets table, specifically on the films_id property.
+  #this will pull through too much info - we only want to access the price.
+  #some kind of loop or enumeration method may help to loop through the objects (films), return the prices and subtract the prices from the funds.
+
+  #  def pay_ticket(ticket)
+  #    return "That is not your ticket!" if @id != ticket.customer_id
+  #   ticket.get_ticket_price()
+  #   @funds = @funds - ticket_price
+  #
+  #
+  #   return @funds
+  # end
+
+  def pay_ticket(ticket)
+    if @id == ticket.customer_id
+      return "Payment successful. Your remaining funds are #{@funds -= ticket.get_ticket_price()}"
+    end
+    return "That is not your ticket!"
+  end
+
+  # def get_prices
+  #   sql = "SELECT price FROM films
+  #   INNER JOIN tickets
+  #   ON tickets.film_id = films.id
+  #   WHERE customer_id = $1"
+  #   values = [@id]
+  #   films_info = SqlRunner.run(sql, values)
+  #   films_info.map { |price| Film.new(price) }
+  # end
+  #
+  # def pay_for_tickets
+  #   films = self.films
+  #   prices = films.map { |film| film.price}
+  #   customer_payments = []
+  #   prices.each { |price| customer_payments.push(price) }
+  #   total_paid = customer_payments.reduce(:+)
+  #   @funds -= total_paid
+  # end
 
 
 
