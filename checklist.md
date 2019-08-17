@@ -25,7 +25,7 @@ This completes the MVP. :star: WELL DONE! :star:
 
 :star: Have you submitted to Github? :star:
 
-#Basic extensions
+#Basic extensions (USING BRANCH_ONE)
 *Create a method that decreases customer funds when they buy a ticket. I've included code that brings in the update function, so the DB is also affected. DONE *
 
 *Check how many tickets have been bought by a particular customer - responsibility could lie in customer or ticket class, so I have put it in both. A customer might want to know how many tickets he/she has (e.g. for budgeting), and the cinema (represented by the ticket class) might want to know the same information for marketing purposes. DONE *
@@ -36,7 +36,7 @@ This completes the MVP. :star: WELL DONE! :star:
 
 This completes the Basic Extensions. :star: REALLY WELL DONE! :star:
 
-#Advanced Extensions
+#Advanced Extensions (USING BRANCH_TWO)
 *Create a screenings table that lets us know what time films are showing
 
 *Write a method that finds out what is the most popular time (most tickets sold) for a given film
@@ -44,3 +44,5 @@ This completes the Basic Extensions. :star: REALLY WELL DONE! :star:
 *Limit the available tickets for screenings.
 
 *Add any other extensions you think would be great to have at a cinema!
+
+This completes the Advanced Extensions. :star: AMAZING!! :star:

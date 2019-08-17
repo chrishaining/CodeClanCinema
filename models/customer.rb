@@ -6,12 +6,13 @@ require_relative('../db/sql_runner')
 class Customer
 
   attr_accessor :name, :funds
-  attr_reader :id
+  attr_reader :id, :paid_tickets
 
   def initialize(options)
     @name = options['name']
     @funds = options['funds'].to_i
     @id = options['id'].to_i if options['id']
+    @paid_tickets = []
   end
 
   #CREATE an instance of the Customer class.
@@ -96,10 +97,14 @@ class Customer
   #   return @funds
   # end
 
+#function for customer to pay ticket. the function returns if the customer has already bought the ticket, has insufficient funds for the ticket, or if the ticket is not assigned to that customer. else, the function processes the payment, subtracts the price from the customer's funds, then updates the sql table.
   def pay_ticket(ticket)
     if @id == ticket.customer_id
+      return "You already paid for this. We only charge you once per ticket." if paid_tickets.include? ticket
+      return "Sorry - your payment is declined due to lack of funds." if @funds < ticket.get_ticket_price
       new_funds = @funds -= ticket.get_ticket_price()
       self.funds == new_funds
+      @paid_tickets.push(ticket)
       self.update
       return "Payment successful. Your remaining funds are #{new_funds}"
       # return "Payment successful. Your remaining funds are #{@funds -= ticket.get_ticket_price()}"
