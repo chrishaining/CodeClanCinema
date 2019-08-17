@@ -26,7 +26,7 @@ class Ticket
     @id = result['id'].to_i
   end
 
-  #Shows all the customers (READ)
+  #Shows all the tickets (READ)
   def self.show_all()
     sql = "SELECT * FROM tickets"
     all_tickets = SqlRunner.run(sql)
@@ -61,7 +61,7 @@ class Ticket
     end
 
 
-    #DELETE ticket class (so, delete all tickets)
+    #DELETE all instances of the ticket class
     def self.delete_all
       sql = "DELETE FROM tickets"
       SqlRunner.run(sql)
@@ -70,7 +70,7 @@ class Ticket
     #DELETE an instance of a tickets
     def delete
       sql = "DELETE FROM tickets WHERE id = $1"
-      values = [id]
+      values = [@id]
       SqlRunner.run(sql, values)
     end
 

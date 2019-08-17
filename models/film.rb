@@ -46,7 +46,7 @@ class Film
       customers_info.map { |customer| Customer.new(customer) }
     end
 
-  #Basic extension: counts how many cusotmers are coming to see one film (READ)
+  #Basic extension: counts how many customers are coming to see one film (READ)
   def count_customers
      self.customers.length
   end
@@ -70,7 +70,7 @@ class Film
     end
 
     #DELETE method (on an instance of the film class)
-    def delete
+    def delete(id)
       sql = "DELETE FROM films WHERE id = $1"
       values = [@id]
       SqlRunner.run(sql, values)

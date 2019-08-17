@@ -44,5 +44,9 @@ This completes the Basic Extensions. :star: REALLY WELL DONE! :star:
 *Limit the available tickets for screenings.
 
 *Add any other extensions you think would be great to have at a cinema!
+I would like to have:
+the cinema has a till (maybe in the ticket or screening class, or possibly a separate box office) - it goes up when a customer buys a ticket
+price changes depending on screening (so, a matinee would be cheaper)
+films get rated based on either popularity or on a customer review 
 
 This completes the Advanced Extensions. :star: AMAZING!! :star:
