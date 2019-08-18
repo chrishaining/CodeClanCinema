@@ -35,21 +35,47 @@ class Film
       return result
     end
 
-#Shows all the  customers who are coming to see one film (READ)
-    def customers
-      sql = "SELECT customers.* FROM customers
-      INNER JOIN tickets
-      ON tickets.customer_id = customers.id
-      WHERE film_id = $1"
-      values = [@id]
-      customers_info = SqlRunner.run(sql, values)
-      customers_info.map { |customer| Customer.new(customer) }
+    #REDO
+    #Shows all the customers who are coming to see one film (READ)
+    # def customers
+    #   sql = "SELECT customers.* FROM customers
+    #   INNER JOIN tickets
+    #   ON tickets.customer_id = customers.id
+    #   WHERE tickets.film_id = $1"
+    #   values = [@id]
+    #   customers_info = SqlRunner.run(sql, values)
+    #   customers_info.map { |customer| Customer.new(customer) }
+    # end
+
+    #Basic extension: counts how many cusotmers are coming to see one film (READ)
+    def count_customers
+      self.customers.length
     end
 
-  #Basic extension: counts how many cusotmers are coming to see one film (READ)
-  def count_customers
-     self.customers.length
-  end
+    #idea for advanced extensions (READ)
+    def show_most_popular_screening_time()
+      sql = "
+      SELECT screenings.screening_time FROM screenings
+      INNER JOIN tickets
+      ON tickets.screening_id = screenings.id
+      WHERE screenings.film_id = $1"
+      values = [@id]
+      screening_times = SqlRunner.run(sql, values)
+      times = screening_times.map { |screening| Screening.new(screening).screening_time  }
+      return "The most popular time for this film is #{times.max_by {|time| times.count(time)}}" 
+    end
+
+
+    # SELECT screening_time FROM screenings
+    # INNER JOIN tickets
+    # ON tickets.screening_id = screenings.id
+    # WHERE tickets.film_id = $1
+    #Advanced extension: find out the most popular screening_time for a given film
+    #In ticket, create a class function to map the number of tickets sold per screening - maybe screening.screening_time . should produce a collection of all tickets. inner join on screenings to get film times?
+    #using this function, go to film.
+
+
+
 
     #UPDATE method (on an instance of the film class)
     def update

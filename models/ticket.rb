@@ -4,24 +4,35 @@ require_relative('../db/sql_runner')
 class Ticket
 
   attr_reader :id
-  attr_accessor :film_id, :customer_id
+  attr_accessor :screening_id, :customer_id
 
   def initialize(options)
     @id = options['id'].to_i if options['id']
-    @film_id = options['film_id'].to_i
+    @screening_id = options['screening_id'].to_i
     @customer_id = options['customer_id'].to_i
   end
 
-  #CREATE a ticket
-  def save
+#Count all tickets for a screening (not in itself a useful method, and would probably sit better in the screening class, but I've put it here to make it easier when I use the function in save)
+def Ticket.count_tickets_for_screening(screening)
+  sql = "
+  SELECT COUNT (*) FROM tickets
+  WHERE tickets.screening_id = $1"
+    values = [screening.id]
+    tickets_for_screening = SqlRunner.run(sql, values)[0]
+    return tickets_for_screening['count'].to_i
+end
+
+  #CREATE a ticket. have refactored this to return if there is no capacity in the requested screening.
+  def save(screening)
+    return "This screening is full." if screening.capacity <= Ticket.count_tickets_for_screening(screening)
     sql = "
     INSERT INTO tickets
-    (film_id, customer_id)
+    (screening_id, customer_id)
     VALUES
     ($1, $2)
     RETURNING id
     "
-    values = [@film_id, @customer_id]
+    values = [@screening_id = screening.id, @customer_id]
     result = SqlRunner.run(sql, values)[0]
     @id = result['id'].to_i
   end
@@ -52,11 +63,11 @@ class Ticket
     def update
       sql = "
       UPDATE tickets
-      SET (film_id, customer_id) =
+      SET (screening_id, customer_id) =
       ($1, $2)
       WHERE id = $3
       "
-      values = [@film_id, @customer_id, @id]
+      values = [@screening_id, @customer_id, @id]
       SqlRunner.run(sql, values)
     end
 
@@ -118,9 +129,9 @@ class Ticket
     def get_ticket_price
       sql =
       "SELECT films.price FROM films
-      INNER JOIN tickets
-      ON tickets.film_id = films.id
-      WHERE tickets.id = $1"
+      INNER JOIN screenings
+      ON screenings.film_id = films.id
+      WHERE screenings.ticket_id = $1"
       values = [@id]
       ticket_price = SqlRunner.run(sql, values)[0]['price'].to_i
       return ticket_price
