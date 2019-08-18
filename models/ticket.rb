@@ -12,19 +12,19 @@ class Ticket
     @customer_id = options['customer_id'].to_i
   end
 
-#Count all tickets for a screening (not in itself a useful method, and would probably sit better in the screening class, but I've put it here to make it easier when I use the function in save)
-def Ticket.count_tickets_for_screening(screening)
-  sql = "
-  SELECT COUNT (*) FROM tickets
-  WHERE tickets.screening_id = $1"
+  #Count all tickets for a screening (not in itself a useful method, and would probably sit better in the screening class, but I've put it here to make it easier when I use the function in save)
+  def Ticket.count_tickets_for_screening(screening)
+    sql = "
+    SELECT COUNT (*) FROM tickets
+    WHERE tickets.screening_id = $1"
     values = [screening.id]
     tickets_for_screening = SqlRunner.run(sql, values)[0]
     return tickets_for_screening['count'].to_i
-end
+  end
 
   #CREATE a ticket. have refactored this to return if there is no capacity in the requested screening.
   def save(screening)
-    return "This screening is full." if screening.capacity <= Ticket.count_tickets_for_screening(screening)
+    return "That screening is full." if screening.capacity <= Ticket.count_tickets_for_screening(screening)
     sql = "
     INSERT INTO tickets
     (screening_id, customer_id)
@@ -54,128 +54,72 @@ end
     "
     values = [customer_id = customer.id]
     customers = SqlRunner.run(sql, values)[0]
-        # result = customers.map { |customer| Customer.new(customer) }
-     return "Customer with id #{customer.id} has #{customers['count'].to_i} tickets."
-    end
-
-
-    #UPDATE a ticket. Not very likely in the real-world, but in our system we have the ability to update. So, if a customer wants to watch a different film, they can change the film, or someone can give their ticket to someone else.
-    def update
-      sql = "
-      UPDATE tickets
-      SET (screening_id, customer_id) =
-      ($1, $2)
-      WHERE id = $3
-      "
-      values = [@screening_id, @customer_id, @id]
-      SqlRunner.run(sql, values)
-    end
-
-
-    #DELETE ticket class (so, delete all tickets)
-    def self.delete_all
-      sql = "DELETE FROM tickets"
-      SqlRunner.run(sql)
-    end
-
-    #DELETE an instance of a tickets
-    def delete
-      sql = "DELETE FROM tickets WHERE id = $1"
-      values = [id]
-      SqlRunner.run(sql, values)
-    end
-
-    #SEllING A Ticket
-    #   def get_ticket_price
-    #     sql = "SELECT price FROM FILMS
-    #     WHERE films.id = $1"
-    #     values = [@film_id]
-    #     ticket_price = SqlRunner.run(sql, values)
-    #     return ticket_price
-    # end
-
-
-    # def get_ticket_price
-    #   sql = "
-    #   SELECT films.price, customers.funds FROM FILMS
-    #   INNER JOIN tickets
-    #   ON tickets.film_id = films.id
-    #   INNER JOIN customers
-    #   ON customer_id = customers.id
-    #   WHERE tickets.id = $1"
-    #   values = [@id]
-    #   ticket_price = SqlRunner.run(sql, values)
-    #   return ticket_price
-    # end
-
-    #the following function takes the ticket id and gets the price of the film and the customer funds. it then puts the price and funds into an array. The next step is to subtract the price from the funds, to leave remaining funds. However, this is not the function I want. It puts too much responsibility on the ticket class, and doesn't actually affect the customer's funds. so the next task for me is to transfer some of the code into the customer class. maybe the last two lines... (?) On second thoughts, it doesn't make sense to have the ticket class know about the customer's funds. it only needs to know the film price and customer id. So, the ticket class can take create an array or object containing price and customer id. it could then do a for loop/enumeration with a conditional. It would go through every customer and, if customers.id == customer_id, customers.funds -= price. (or can we do it using sql, maybe by having multiple - nested - functions?)
-
-    #Gets ticket_price and customer funds
-    # def get_ticket_price
-    #   sql =
-    #   "SELECT films.price, customers.funds FROM films
-    #   INNER JOIN tickets
-    #   ON tickets.film_id = films.id
-    #   INNER JOIN customers
-    #   ON customer_id = customers.id
-    #   WHERE tickets.id = $1"
-    #   values = [@id]
-    #   ticket_price_and_funds = SqlRunner.run(sql, values)[0]
-    #   remaining_funds = ticket_price_and_funds.map { |price, funds| funds.to_i - price.to_i}
-    #   #return remaining_funds[1] - remaining_funds[0]
-    # end
-
-    #gets only the ticket price
-    def get_ticket_price
-      sql =
-      "SELECT films.price FROM films
-      INNER JOIN screenings
-      ON screenings.film_id = films.id
-      WHERE screenings.ticket_id = $1"
-      values = [@id]
-      ticket_price = SqlRunner.run(sql, values)[0]['price'].to_i
-      return ticket_price
-      #ticket_price.map { |price| price.to_i}
-      #  remaining_funds = ticket_price_and_funds.map { |price, funds| funds.to_i - price.to_i}
-      #return remaining_funds[1] - remaining_funds[0]
-    end
-
-    #
-    # films = self.films
-    # prices = films.map { |film| film.price}
-    # customer_payments = []
-    # prices.each { |price| customer_payments.push(price) }
-    # total_paid = customer_payments.reduce(:+)
-    # @funds -= total_paid
-    # ticket_price.map { || }
-    #
-    #
-    # prices = films.map { |film| film.price}
-    # customer_data = results[0]
-    # customer = Customer.new(customer_data)
-    # return customer
-
-
-
-    # def sell_ticket
-    #   sql = "SELECT films.price, customers.id FROM films
-    #   INNER JOIN tickets
-    #   ON tickets.film_id = films.id
-    #   INNER JOIN customers
-    #   ON tickets.customer_id = customers.id
-    #   WHERE tickets.id = $1"
-    #   values = [@id]
-    #   ticket_prices = SqlRunner.run(sql, values)
-    #   p ticket_prices
-    # end
-
-
-    #IDEA FOR PULLING PRICE
-    # SELECT films.price, customers.name FROM films
-    # INNER JOIN tickets
-    # ON tickets.film_id = films.id
-    # INNER JOIN customers
-    # ON customers.id = customer_id
-    # WHERE customers.id = 111
-    # final end
+    # result = customers.map { |customer| Customer.new(customer) }
+    return "Customer with id #{customer.id} has #{customers['count'].to_i} tickets."
   end
+
+  #UPDATE a ticket. Not very likely in the real-world, but in our system we have the ability to update. So, if a customer wants to watch a different film, they can change the film, or someone can give their ticket to someone else.
+  def update
+    sql = "
+    UPDATE tickets
+    SET (screening_id, customer_id) =
+    ($1, $2)
+    WHERE id = $3
+    "
+    values = [@screening_id, @customer_id, @id]
+    SqlRunner.run(sql, values)
+  end
+
+  #DELETE ticket class (so, delete all tickets)
+  def self.delete_all
+    sql = "DELETE FROM tickets"
+    SqlRunner.run(sql)
+  end
+
+  #DELETE an instance of a tickets
+  def delete
+    sql = "DELETE FROM tickets WHERE id = $1"
+    values = [id]
+    SqlRunner.run(sql, values)
+  end
+
+  #gets only the ticket price. works as long as it is run on a valid ticket.
+  def get_ticket_price
+    sql = "
+    SELECT films.price FROM films
+    INNER JOIN screenings
+    ON films.id = screenings.film_id
+    INNER JOIN tickets
+    ON tickets.screening_id = screenings.id
+    WHERE tickets.id = $1
+    "
+    values = [@id]
+    ticket_price = SqlRunner.run(sql, values)[0]['price'].to_i
+    return ticket_price
+  end
+
+  #this function is to enable ticket sales. A bit strange, as the cinema wouldn't have direct access to this, but because we don't have an intermediary such as Worldpay, I think it is ok to put the function here. It works, as long as it is called on a valid ticket.
+  def check_customer_funds
+    sql = "
+    SELECT customers.funds FROM customers
+    INNER JOIN tickets
+    ON tickets.customer_id = customers.id
+    WHERE customers.id = $1"
+    values = [@customer_id]
+    result = SqlRunner.run(sql, values)[0]['funds'].to_i
+    return result
+  end
+
+  #sells a ticket, and removes customer funds. Responsibility for removing the customer funds does not lie with the customer (once they have decided to buy the ticket, they no longer control whether money will come from their funds). I have put the customer as an argument so that the program can access customer.funds. If the transaction goes ahead, the ticket is deleted. This is so that it cannot be sold again. This has been only partly successful - although a ticket cannot be sold twice, it brings an error message on the second attempt.
+  def sell_ticket(customer)
+    return "Wrong customer!" if customer.id != self.customer_id
+    return "Sorry - your payment is declined." if self.check_customer_funds < self.get_ticket_price
+    return "There's no ticket!" unless defined?(self) != nil
+    customer.funds -= self.get_ticket_price
+    customer.update
+    self.delete
+    return "Thanks for buying the ticket."
+  end
+
+  # final end
+end

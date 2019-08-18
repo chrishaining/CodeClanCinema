@@ -10,7 +10,7 @@ Film.delete_all()
 Customer.delete_all()
 Screening.delete_all()
 
-film1 = Film.new({'title' => 'Goodfellas', 'price' => '8.00'})
+film1 = Film.new({'title' => 'Goodfellas', 'price' => '80.00'})
 film1.save
 
 film2 = Film.new({'title' => 'The Godfather', 'price' => '5.00'})
@@ -55,23 +55,23 @@ screening4.save
 ticket1 = Ticket.new({ 'customer_id' => customer1.id})
 ticket1.save(screening1)
 
-# ticket2 = Ticket.new({ 'screening_id' => screening1.id, 'customer_id' => customer2.id})
-# ticket2.save
-#
-# ticket3 = Ticket.new({ 'screening_id' => screening1.id, 'customer_id' => customer3.id})
-# ticket3.save
-#
-# ticket4 = Ticket.new({ 'screening_id' => screening2.id, 'customer_id' => customer4.id})
-# ticket4.save
-#
-# ticket5 = Ticket.new({ 'screening_id' => screening3.id, 'customer_id' => customer5.id})
-# ticket5.save
-#
-# ticket6 = Ticket.new({ 'screening_id' => screening4.id, 'customer_id' => customer1.id})
-# ticket6.save
-#
-# ticket7 = Ticket.new({ 'screening_id' => screening4.id, 'customer_id' => customer2.id})
-# ticket7.save
+ticket2 = Ticket.new({ 'customer_id' => customer2.id})
+ticket2.save(screening2)
+
+ticket3 = Ticket.new({ 'customer_id' => customer3.id})
+ticket3.save(screening3)
+
+ticket4 = Ticket.new({ 'customer_id' => customer4.id})
+ticket4.save(screening4)
+
+ticket5 = Ticket.new({ 'customer_id' => customer5.id})
+ticket5.save(screening3)
+
+ticket6 = Ticket.new({ 'customer_id' => customer1.id})
+ticket6.save(screening2)
+
+ticket7 = Ticket.new({ 'customer_id' => customer2.id})
+ticket7.save(screening1)
 
 
 binding.pry

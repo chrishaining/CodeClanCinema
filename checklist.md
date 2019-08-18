@@ -37,10 +37,10 @@ This completes the MVP. :star: WELL DONE! :star:
 This completes the Basic Extensions. :star: REALLY WELL DONE! :star:
 
 #Advanced Extensions
-*Create a screenings table that lets us know what time films are showing
+*Create a screenings table that lets us know what time films are showing DONE *
 
-*Write a method that finds out what is the most popular time (most tickets sold) for a given film
+*Write a method that finds out what is the most popular time (most tickets sold) for a given film DONE *
 
-*Limit the available tickets for screenings.
+*Limit the available tickets for screenings. DONE *
 
 *Add any other extensions you think would be great to have at a cinema!
