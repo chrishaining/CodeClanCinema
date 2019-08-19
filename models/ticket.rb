@@ -4,12 +4,13 @@ require_relative('../db/sql_runner')
 class Ticket
 
   attr_reader :id
-  attr_accessor :screening_id, :customer_id
+  attr_accessor :screening_id, :customer_id, :status
 
   def initialize(options)
     @id = options['id'].to_i if options['id']
     @screening_id = options['screening_id'].to_i
     @customer_id = options['customer_id'].to_i
+    @status = options['status']
   end
 
   #Count all tickets for a screening (not in itself a useful method, and would probably sit better in the screening class, but I've put it here to make it easier when I use the function in save)
@@ -27,12 +28,12 @@ class Ticket
     return "That screening is full." if screening.capacity <= Ticket.count_tickets_for_screening(screening)
     sql = "
     INSERT INTO tickets
-    (screening_id, customer_id)
+    (screening_id, customer_id, status)
     VALUES
-    ($1, $2)
+    ($1, $2, $3)
     RETURNING id
     "
-    values = [@screening_id = screening.id, @customer_id]
+    values = [@screening_id = screening.id, @customer_id, @status = "Unsold"]
     result = SqlRunner.run(sql, values)[0]
     @id = result['id'].to_i
   end
@@ -58,7 +59,7 @@ class Ticket
     return "Customer with id #{customer.id} has #{customers['count'].to_i} tickets."
   end
 
-  #UPDATE a ticket. Not very likely in the real-world, but in our system we have the ability to update. So, if a customer wants to watch a different film, they can change the film, or someone can give their ticket to someone else.
+  #UPDATE a ticket. Not very likely in the real-world, but in our system we have the ability to update. So, if a customer wants to watch a different film, they can change the film, or someone can give their ticket to someone else. HOW DO I PREVENT SOMEONE UPDATING THE STATUS ATTRIBUTE? 
   def update
     sql = "
     UPDATE tickets
@@ -114,10 +115,10 @@ class Ticket
   def sell_ticket(customer)
     return "Wrong customer!" if customer.id != self.customer_id
     return "Sorry - your payment is declined." if self.check_customer_funds < self.get_ticket_price
-    return "There's no ticket!" unless defined?(self) != nil
+    return "That ticket's already paid for" if self.status == "Sold"
     customer.funds -= self.get_ticket_price
     customer.update
-    self.delete
+    self.status = "Sold"
     return "Thanks for buying the ticket."
   end
 

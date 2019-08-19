@@ -25,5 +25,6 @@ CREATE TABLE screenings (
 CREATE TABLE tickets (
   id SERIAL8 PRIMARY KEY,
   screening_id INT8 REFERENCES screenings(id) ON DELETE CASCADE,
-  customer_id INT8 REFERENCES customers(id) ON DELETE CASCADE
+  customer_id INT8 REFERENCES customers(id) ON DELETE CASCADE,
+  status VARCHAR(255)
 );
