@@ -13,7 +13,7 @@ class Ticket
     @status = options['status']
   end
 
-  #Count all tickets for a screening (not in itself a useful method, and would probably sit better in the screening class, but I've put it here to make it easier when I use the function in save)
+  #Count all tickets for a screening (not in itself a useful method, and would probably sit better in the screening class, but I've put it here to make it easier when I use the function in save).
   def Ticket.count_tickets_for_screening(screening)
     sql = "
     SELECT COUNT (*) FROM tickets
@@ -24,6 +24,7 @@ class Ticket
   end
 
   #CREATE a ticket. have refactored this to return if there is no capacity in the requested screening.
+  #It would be best to put this function inside another class (customer - so when the customer chooses a screening)
   def save(screening)
     return "That screening is full." if screening.capacity <= Ticket.count_tickets_for_screening(screening)
     sql = "
@@ -137,7 +138,7 @@ class Ticket
 #.all_sold is a class method to calculate the price of all tickets sold. (i.e. total takings). There could be other related functions (e.g. takings per film or per screening, or per customer)
   def self.takings
     sql = "
-    SELECT films.price FROM films
+    SELECT sum(films.price) FROM films
     INNER JOIN screenings
     ON screenings.film_id = films.id
     INNER JOIN tickets
@@ -145,7 +146,7 @@ class Ticket
     WHERE status = 'Sold'
     "
     #  values = [@status = "Sold"]
-    result = SqlRunner.run(sql)[0] #['price'].to_i
+    result = SqlRunner.run(sql)[0]['sum'].to_i
     return result
     # sum = result.reduce(:+)
     #   return sum

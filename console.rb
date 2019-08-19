@@ -73,6 +73,8 @@ ticket6.save(screening2)
 ticket7 = Ticket.new({ 'customer_id' => customer2.id})
 ticket7.save(screening1)
 
-
+ticket1.sell_ticket(customer1)
+ticket2.sell_ticket(customer2)
+# p Ticket.takings
 binding.pry
 nil
