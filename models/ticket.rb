@@ -59,15 +59,15 @@ class Ticket
     return "Customer with id #{customer.id} has #{customers['count'].to_i} tickets."
   end
 
-  #UPDATE a ticket. Not very likely in the real-world, but in our system we have the ability to update. So, if a customer wants to watch a different film, they can change the film, or someone can give their ticket to someone else. HOW DO I PREVENT SOMEONE UPDATING THE STATUS ATTRIBUTE? 
+  #UPDATE a ticket. Not very likely in the real-world, but in our system we have the ability to update. So, if a customer wants to watch a different film, they can change the film, or someone can give their ticket to someone else. HOW DO I PREVENT SOMEONE UPDATING THE STATUS ATTRIBUTE?
   def update
     sql = "
     UPDATE tickets
-    SET (screening_id, customer_id) =
-    ($1, $2)
-    WHERE id = $3
+    SET (screening_id, customer_id, status) =
+    ($1, $2, $3)
+    WHERE id = $4
     "
-    values = [@screening_id, @customer_id, @id]
+    values = [@screening_id, @customer_id, @status, @id]
     SqlRunner.run(sql, values)
   end
 
@@ -118,8 +118,40 @@ class Ticket
     return "That ticket's already paid for" if self.status == "Sold"
     customer.funds -= self.get_ticket_price
     customer.update
-    self.status = "Sold"
+    @status = "Sold"
+    self.update
     return "Thanks for buying the ticket."
+  end
+
+  def self.count_sold
+    sql = "
+    SELECT * from tickets
+    WHERE status = $1
+    "
+    values = [@status = "Sold"]
+    result = SqlRunner.run(sql, values)
+    sold_tickets = result.map { |ticket| Ticket.new( ticket ) }
+  end
+
+
+#.all_sold is a class method to calculate the price of all tickets sold. (i.e. total takings). There could be other related functions (e.g. takings per film or per screening, or per customer)
+  def self.takings
+    sql = "
+    SELECT films.price FROM films
+    INNER JOIN screenings
+    ON screenings.film_id = films.id
+    INNER JOIN tickets
+    ON tickets.screening_id = screenings.id
+    WHERE status = 'Sold'
+    "
+    #  values = [@status = "Sold"]
+    result = SqlRunner.run(sql)[0] #['price'].to_i
+    return result
+    # sum = result.reduce(:+)
+    #   return sum
+    # sold_tickets = result.map { |ticket| Ticket.new( ticket ) }
+    # # ticket_price = SqlRunner.run(sql, values)[0]['price'].to_i
+    # return sold_tickets
   end
 
   # final end
